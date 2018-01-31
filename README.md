@@ -11,8 +11,23 @@ The chart below draws the outcome of the programm. As expected we have a lower r
 # Application
 There are applications, in which the exact solution can be replaced by an approximate solution. The important part in such applications is to find the tradeoff between error size and runtime.
 
+# Structure of the Repository
+- images: Contains png-files drawing key-values of the considered algorithms
+- evaluate.ipynb: Jupyter notebook for creating the png-files based on the outcome of the code (see: result.txt)
+- makefile.make: Makefile to compile (gcc is used) to code.
+- randMatrix.cpp: C++ code for performing the different approaches
+- result.txt: Automatically generated output file from the C++ code.
+
+# Machine
+The Code was solely implemented and tested on a MacBook Pro i5 / 8GB RAM. Due to background processes the resulting timegraphs look volatile.
+
 # Dependencies of the Code
 iostream, iomanip, fstream, random, ctime, map, math.h
+
+# Execution
+The compilation / execution of the program might look like this:
+![alt text](https://github.com/NumericalMax/RandomizedMatrixProduct/blob/master/images/run_0.png)
+![alt text](https://github.com/NumericalMax/RandomizedMatrixProduct/blob/master/images/run_1.png)
 
 # Author
 Max Kapsecker, 2018: Remark, that there is always room for optimization. The Code can certainly be optimized in terms of time and space efficiency. Feel free to report any mistake to: max.kapsecker@tum.de
