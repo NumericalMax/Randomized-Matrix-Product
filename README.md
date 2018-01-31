@@ -9,7 +9,7 @@ The chart below draws the outcome of the programm. As expected we have a lower r
 ![alt text](https://github.com/NumericalMax/RandomizedMatrixProduct/blob/master/images/all.png)
 
 # Application
-There are applications, in which the exact solution can be replaced by an approximate solution of the matrix products. The important part in such applications is to find the tradeoff between error size and runtime.
+There are applications, in which the exact solution can be replaced by an approximate solution. The important part in such applications is to find the tradeoff between error size and runtime.
 
 # Dependencies of the Code
 iostream, iomanip, fstream, random, ctime, map, math.h
