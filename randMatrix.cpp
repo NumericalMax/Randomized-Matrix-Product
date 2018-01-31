@@ -33,6 +33,7 @@
 #define MAX_DISPLAY_SIZE 10
 #define MATRIX_ENTRY_SPACE 12
 #define SAMPLING_STRATEGY 2
+
 namespace matrixOperations{
     
     inline void sumMatrix(float **A, float **B, float **C, int size_l, int size_m){
@@ -40,10 +41,12 @@ namespace matrixOperations{
         /*
          Description:   - Sum of two matrices of the same size
          Runtime:       - O(l*m)
-         Input:         - Reference on input matrix A
-                        - Refrence on input matrix B
-                        - Reference on output matrix C
-         Output:        - Matrix difference
+         Input:         - (float **A)   Reference on input matrix A
+                        - (float **B)   Refrence on input matrix B
+                        - (float **C)   Reference on output matrix C
+                        - (int size_l)  row count of A resp. B
+                        - (int size_m)  col count of A resp. B
+         Output:        -  void
          */
         
         for(int i = 0; i < size_l; i++){
@@ -56,12 +59,14 @@ namespace matrixOperations{
     inline void differenceMatrix(float **A, float **B, float **C, int size_l, int size_m){
         
         /*
-         Description:   - Subtraction of two matrices of the same size
+         Description:   - Difference of two matrices of the same size
          Runtime:       - O(l*m)
-         Input:         - Reference on input matrix A
-                        - Refrence on input matrix B
-                        - Reference on output matrix C
-         Output:        - Matrix difference
+         Input:         - (float **A)   Reference on input matrix A
+                        - (float **B)   Refrence on input matrix B
+                        - (float **C)   Reference on output matrix C
+                        - (int size_l)  row count of A resp. B
+                        - (int size_m)  col count of A resp. B
+         Output:        - void
          */
         
         for(int i = 0; i < size_l; i++){
@@ -77,13 +82,10 @@ namespace matrixOperations{
         /*
          Description:   - Compute Frobenius norm of input matrix
          Runtime:       - O(l*m)
-         Input:         - Reference on input matrix A
-                        - Refrence on input matrix B
-                        - Reference on output matrix C
-                        - row length of A
-                        - row and col length of A and B
-                        - col length of B
-         Output:        - Frobenius norm of input matrix (float)
+         Input:         - (float **A)   Reference on input matrix A
+                        - (int size_l)  row length of A
+                        - (int size_m)  col length of B
+         Output:        - (float)       Frobenius norm of input matrix
          */
         
         float norm = 0.0;
@@ -97,19 +99,20 @@ namespace matrixOperations{
     }
 
 
-    float euclideanNormRows(float **array, int index, int size_l){
+    float euclideanNormRows(float **A, int index, int size_l){
         
         /*
          Description:   - Compute euclidean norm of input vector
          Runtime:       - O(l)
-         Input:         - Reference on input vector
-                        - row length of A
-         Output:        - Euclidean norm of input matrix (float)
+         Input:         - (float **A)   Reference on input matrix
+                        - (int index)   column index to choose from matrix
+                        - (int size_l)  row length of A
+         Output:        - (float)       Euclidean norm of input vector
          */
         
         float norm = 0.0;
         for(int i = 0; i < size_l; i++){
-            norm += array[index][i] * array[index][i];
+            norm += A[index][i] * A[index][i];
         }
         return sqrt(norm);
     }
@@ -120,9 +123,10 @@ namespace matrixOperations{
         /*
          Description:   - Compute euclidean norm of input vector
          Runtime:       - O(l)
-         Input:         - Reference on input vector
-                        - row length of A
-         Output:        - Euclidean norm of input vector (float)
+         Input:         - (float **A)   Reference on input matrix
+                        - (int index)   row index to choose from matrix
+                        - (int size_l)  col length of A
+         Output:        - (float) Euclidean norm of input vector
          */
         
         float norm = 0.0;
@@ -132,73 +136,53 @@ namespace matrixOperations{
         return sqrt(norm);
     }
 
-    void subsampleMatrix(float **inputMatrix1, float **inputMatrix2, float **outputMatrix1, float **outputMatrix2, bool sub_row, int l, int m, int n, int red_m, int sampling){
-        
-        // TODO:
+    void subsampleMatrix(float **inputMatrix1, float **inputMatrix2, float **outputMatrix1, float **outputMatrix2, int l, int m, int n, int red_m, int sampling){
         
         /*
-         Description:   - Subsample an matrix by rows resp. columns by a
-         Runtime:       - O(...)
-         Input:         - reference on original input matrix
-                        - reference on subsampled output matrix
-                        - bool sampling over rows or columns
-                        - dimensions of input matrix (l,m)
-                        - dimensions of output matrix (m, red_m)
-                        - sampling method (1 = uniform, 2 = see paper)
+         Description:   - Subsample an matrix by rows resp. columns by either a uniform or a custom distribution
+         Input:         - (float **inputMatrix1)    reference on original input matrix 1
+                        - (float **inputMatrix1)    reference on original input matrix 2
+                        - (float **inputMatrix1)    reference on subsampled outcome matrix
+                        - (float **inputMatrix1)    reference on subsampled outcome matrix
+                        - (int l)                   row count of input matrix 1
+                        - (int m)                   col / row count of input matrix 1 / input matrix 2
+                        - (int n)                   col count of input matrix 2
+                        - (int red_m)               col / row count subsampled matrices
+                        - (int sampling)            type of subsampling (uniform or custom (1 = uniform, 2 = see paper))
          Output:        - void
          */
         
         if(sampling == SAMPLING_STRATEGY){
             
+            // Runtime: - O(l*red_m)
             float sum = 0.0;
             float *A_row = new float[m];
             float *B_col = new float[m];
             int *value = new int[red_m];
-            int number;
             
+            // compute probability vector
             for(int i = 0; i < m; i++){
                 A_row[i] = euclideanNormRows(inputMatrix1, i, l);
                 B_col[i] = euclideanNormCols(inputMatrix2, i, n);
                 sum += (A_row[i] + B_col[i]);
             }
-            
             for(int i = 0; i < m; i++){
                 A_row[i] = (A_row[i] + B_col[i]) / sum;
             }
-
-            /*std::default_random_engine generator;
-            std::discrete_distribution<float> distribution(A_row);
+            
+            // TODO: custom index sampling from A_row probabilities
+            std::default_random_engine generator;
+            std::uniform_int_distribution<> distribution(0, red_m - 1);
             
             for(int i = 0; i < red_m; i++){
-                
-                number = distribution(generator);
-                value[i] = number;
-                
-            }*/
-            
-            // TODO:
-            // replace by custom distribution
-            std::random_device rd;
-            std::mt19937 eng(rd());
-            std::uniform_int_distribution<> distr(0, red_m - 1);
-            
-            for(int i = 0; i < red_m; i++){
-                
-                number = int(distr(eng));
-                value[i] = number;
-                
+                value[i] = distribution(generator);
+                for(int j = 0; j < n; j++){
+                    outputMatrix2[value[i]][j] = inputMatrix2[value[i]][j];
+                }
             }
-            
-            
             for(int i = 0; i < l; i++){
                 for(int j = 0; j < red_m; j++){
                     outputMatrix1[i][value[j]] = inputMatrix1[i][value[j]];
-                }
-            }
-            
-            for(int i = 0; i < red_m; i++){
-                for(int j = 0; j < n; j++){
-                    outputMatrix2[value[i]][j] = inputMatrix2[value[i]][j];
                 }
             }
             
@@ -209,34 +193,26 @@ namespace matrixOperations{
         }
         else {
             
+            // Runtime: - O(l*red_m)
             int *value = new int[red_m];
-            int number;
             
-            // uniform sampling
+            // uniform index sampling
             std::random_device rd;
             std::mt19937 eng(rd());
             std::uniform_int_distribution<> distr(0, red_m - 1);
             
+            // downsample matrices
             for(int i = 0; i < red_m; i++){
-                
-                number = int(distr(eng));
-                value[i] = number;
-                
+                value[i] = int(distr(eng));
+                for(int j = 0; j < n; j++){
+                    outputMatrix2[value[i]][j] = inputMatrix2[value[i]][j];
+                }
             }
-            
-            
             for(int i = 0; i < l; i++){
                 for(int j = 0; j < red_m; j++){
                     outputMatrix1[i][value[j]] = inputMatrix1[i][value[j]];
                 }
             }
-            
-            for(int i = 0; i < red_m; i++){
-                for(int j = 0; j < n; j++){
-                    outputMatrix2[value[i]][j] = inputMatrix2[value[i]][j];
-                }
-            }
-
             delete[] value;
         }
     }
@@ -245,15 +221,15 @@ namespace matrixOperations{
     void outerMatrixProduct(float **A, float **B, float **C, int size_l, int size_m, int size_n){
         
         /*
-         Description:   - Matrix multiplication by outer products
+         Description:   - Matrix multiplication AB by outer products
          Runtime:       - O(l*m*n)
-         Input:         - Reference on input matrix A
-                        - Refrence on input matrix B
-                        - Reference on output matrix C
-                        - row length of A
-                        - row and col length of A and B
-                        - col length of B
-         Output:        - Matrix Product
+         Input:         - (float **A)   Reference on input matrix A
+                        - (float **B)   Refrence on input matrix B
+                        - (float **C)   Reference on output matrix C
+                        - (int size_l)  row length of A
+                        - (int size_m)  row and col length of A and B
+                        - (int size_n)  col length of B
+         Output:        - void
          */
         
         for(int k = 0; k < size_m; k++){
@@ -269,15 +245,15 @@ namespace matrixOperations{
     void innerMatrixProduct(float **A, float **B, float **C, int size_l, int size_m, int size_n){
         
         /*
-         Description:   - Classical matrix multiplication by inner products
+         Description:   - Classical matrix multiplication AB by inner products
          Runtime:       - O(l*m*n)
-         Input:         - Reference on input matrix A
-                        - Refrence on input matrix B
-                        - Reference on output matrix C
-                        - row length of A
-                        - row and col length of A and B
-                        - col length of B
-         Output:        - Matrix product
+         Input:         - (float **A)   Reference on input matrix A
+                        - (float **B)   Refrence on input matrix B
+                        - (float **C)   Reference on output matrix C
+                        - (int size_l)  row length of A
+                        - (int size_m)  row and col length of A and B
+                        - (int size_n)  col length of B
+         Output:        - void
          */
         
         for(int i = 0; i < size_l; i++){
@@ -295,10 +271,10 @@ namespace matrixOperations{
         
         /*
          Description:   - Prints a matrix
-         Input:         - Reference on input matrix A
-                        - Row count of input matrix A
-                        - Col count of input matrix A
-         Output:        - Prints out matrix values
+         Input:         - (float **matrix)  Reference on matrix
+                        - (int size_l)      Row count of input matrix A
+                        - (int size_m)      Col count of input matrix A
+         Output:        - void
          */
         
         std::cout << std::endl;
@@ -317,15 +293,15 @@ namespace matrixOperations{
         /*
          Description:   - Fill input matrix with random numbers
          Runtime:       - O(l*m)
-         Input:         - Reference on input matrix A
+         Input:         - (**matrix)    Reference on input matrix A
+                        - (int size_l)  Row count of input matrix A
+                        - (int size_m)  Col count of input matrix A
          Output:        - Matrix with random numbers (range: [0,1]) as entry
          */
         
         for(int i = 0; i < size_l; i++){
             for (int j = 0; j < size_m; j++){
-                
                 matrix[i][j] = double(rand()) / (RAND_MAX);
-            
             }
         }
     }
@@ -343,7 +319,7 @@ int main(){
     double elapsed_secs_inner_exact, elapsed_secs_outer_exact, elapsed_secs_outer_approx;
     float error_inner_exact, error_outer_exact, error_outer_approx;
     
-    // enable randomness
+    // set seed
     srand(time(NULL));
     
     if(consoleMode){
@@ -453,7 +429,7 @@ int main(){
         
         // APPROXIMATE OUTER MATRIX PRODUCT - UNIFORM SAMPLING
         clock_t begin_outer_approx = clock();
-        matrixOperations::subsampleMatrix(A, B, A_red, B_red, true, l, m, n, red_m, SAMPLING_STRATEGY);
+        matrixOperations::subsampleMatrix(A, B, A_red, B_red, l, m, n, red_m, SAMPLING_STRATEGY);
         matrixOperations::outerMatrixProduct(A_red, B_red, C_approx_outer, l, red_m, n);
         clock_t end_outer_approx = clock();
         elapsed_secs_outer_approx = (double(end_outer_approx - begin_outer_approx) / CLOCKS_PER_SEC) * 1000.0;
@@ -472,8 +448,8 @@ int main(){
         std::cout << "Error of the approximate outer product: " << error_approx << "." << std::endl;
         std::cout << "------------------------------" << std::endl;
         
-        // clean dynamic memory
-        // free sub-arrays
+        // CLEAN DYNAMIC MEMORY
+        // FREE SUBARRAYS
         for(int i = 0; i <l; i++){
             delete[] A[i];
             delete[] A_red[i];
@@ -487,7 +463,7 @@ int main(){
         for(int i = 0; i < red_m; i++){
             delete[] B_red[i];
         }
-        // free arrays
+        // FREE ARRAYS
         delete[] A;
         delete[] B;
         delete[] A_red;
@@ -576,7 +552,7 @@ int main(){
             
             // outer product approx - uniform sampling
             clock_t begin_outer_approx = clock();
-            matrixOperations::subsampleMatrix(A, B, A_red, B_red, true, l, m, n, red_m, SAMPLING_STRATEGY);
+            matrixOperations::subsampleMatrix(A, B, A_red, B_red, l, m, n, red_m, SAMPLING_STRATEGY);
             matrixOperations::outerMatrixProduct(A_red, B_red, C_approx_outer, l, red_m, n);
             clock_t end_outer_approx = clock();
             elapsed_secs_outer_approx = (double(end_outer_approx - begin_outer_approx) / CLOCKS_PER_SEC) * 1000.0;
@@ -585,9 +561,7 @@ int main(){
             
             // clean dynamic memory
             // free sub-arrays
-
-            // TODO: Manage to free memory within loop!
-            // ATTENTION: Can be dangerous
+            // TODO: Manage to free memory within loop! IMPORTANT!
             /*for(int i1 = 0; i1 < l; i1++){
                 delete[] A[i1];
                 delete[] A_red[i1];
@@ -611,7 +585,7 @@ int main(){
             delete[] C_approx_outer;*/
             
             // write results to file
-            result << std::fixed << l << "," << elapsed_secs_inner_exact << "," << error_inner_exact << "," << elapsed_secs_outer_exact << "," << error_outer_exact << "," << elapsed_secs_outer_approx << "," << double(error_outer_approx) / double(l*l) << "," << subsample << "\n";
+            result << std::fixed << l << "," << elapsed_secs_inner_exact << "," << error_inner_exact << "," << elapsed_secs_outer_exact << "," << error_outer_exact << "," << elapsed_secs_outer_approx << "," << double(error_outer_approx) << "," << subsample << "\n";
             
         }
         
