@@ -11,13 +11,7 @@ The chart below draws the outcome of the programm. As expected we have a lower r
 ![alt text](https://github.com/NumericalMax/RandomizedMatrixProduct/blob/master/images/all.png)
 
 # Dependencies
-<iostream>
-<iomanip>
-<fstream>
-<math.h>
-<ctime>
-<random>
-<map>
+iostream, iomanip, fstream, random, ctime, map, math.h
 
 # Author
 Max Kapsecker, 2018: Remark, that there is always room for optimization. The Code can surely optimized in terms of time -and spaceefficiency. Feel free to report any mistake: max.kapsecker@tum.de
