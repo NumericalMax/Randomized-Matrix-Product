@@ -10,6 +10,8 @@ The chart below draws the outcome of the programm. As expected we have a lower r
 
 ![alt text](https://github.com/NumericalMax/RandomizedMatrixProduct/blob/master/images/all.png)
 
+There are applications, in which an approximate solution of large scaled matrix products is sufficient. The important part might be to find the tradeoff between error size and runtime.
+
 # Dependencies
 iostream, iomanip, fstream, random, ctime, map, math.h
 
