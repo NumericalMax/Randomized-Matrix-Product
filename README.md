@@ -31,7 +31,7 @@ The compilation / execution of the program might look like this:
 
 # TODO:
 - Implementation of the random sampling by the given probability vector A_row.
-  By now there is only uniform sampling implemented.
+  By now there is only uniform sampling implemented, i.e. not the sampling proposed in the paper.
 
 # Author
 Max Kapsecker, 2018: Remark, that there is always room for optimization. The Code can certainly be optimized in terms of time and space efficiency. Feel free to report any mistake to: max.kapsecker@tum.de
