@@ -31,7 +31,7 @@ The compilation / execution of the program might look like this:
 ![alt text](https://github.com/NumericalMax/RandomizedMatrixProduct/blob/master/images/run_1.png)
 
 # Compiler
-Note that for compilation g++ compiler with c++11 standard is used.
+Note: The g++ compiler with c++11 standard is used.
 
 # TODO:
 - Free dynamic memory in for loop! 
