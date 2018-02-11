@@ -6,7 +6,8 @@ https://arxiv.org/pdf/1608.04481v1.pdf
 
 The chart below draws the outcome of the programm. As expected we have a lower runtime by considering the randomized matrix multiplication. The accompanied error for the probabilistic approach is represented by the average error on each cell, that is the total error measured by the Frobenius norm divided by the number of total entries. For instance: Let's assume an average error of 0.1 measured for a matrix dimension of 25x25. The overall error is then reverse computed by 0.1*25*25 = 62.5.
 
-![alt text](https://github.com/NumericalMax/RandomizedMatrixProduct/blob/master/images/all_avg.png)
+![alt text](https://github.com/NumericalMax/RandomizedMatrixProduct/blob/master/images/all_avg_uniform.png)
+![alt text](https://github.com/NumericalMax/RandomizedMatrixProduct/blob/master/images/all_avg_custom.png)
 
 # Application
 There are applications, in which the exact solution can be replaced by an approximate solution. The important part in such applications is to find the tradeoff between error size and runtime.
@@ -29,10 +30,11 @@ The compilation / execution of the program might look like this:
 ![alt text](https://github.com/NumericalMax/RandomizedMatrixProduct/blob/master/images/run_0.png)
 ![alt text](https://github.com/NumericalMax/RandomizedMatrixProduct/blob/master/images/run_1.png)
 
+# Compiler
+Note that for compilation g++ compiler with c++11 standard is used.
+
 # TODO:
-- Implementation of the random sampling by the given probability vector A_row.
-  By now there is only uniform sampling implemented, i.e. not the sampling proposed in the paper.
-- Free dynamic memory in for loop!
+- Free dynamic memory in for loop! 
 
 # Author
 Max Kapsecker, 2018: Remark, that there is always room for optimization. The Code can certainly be optimized in terms of time and space efficiency. Feel free to report any mistake to: max.kapsecker@tum.de

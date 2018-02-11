@@ -136,10 +136,13 @@ namespace matrixOperations{
         return sqrt(norm);
     }
 
+
+    
+    
     void subsampleMatrix(float **inputMatrix1, float **inputMatrix2, float **outputMatrix1, float **outputMatrix2, int l, int m, int n, int red_m, int sampling){
         
         /*
-         Description:   - Subsample an matrix by rows resp. columns by either a uniform or a custom distribution
+         Description:   - Subsample a matrix by rows resp. columns by either a uniform or a custom distribution
          Input:         - (float **inputMatrix1)    reference on original input matrix 1
                         - (float **inputMatrix1)    reference on original input matrix 2
                         - (float **inputMatrix1)    reference on subsampled outcome matrix
@@ -152,6 +155,7 @@ namespace matrixOperations{
          Output:        - void
          */
         
+        // TODO: Check if B is a transpose of A. If so, we can do much more efficient in space-complexity
         if(sampling == SAMPLING_STRATEGY){
             
             // Runtime: - O(l*red_m)
@@ -164,20 +168,20 @@ namespace matrixOperations{
             for(int i = 0; i < m; i++){
                 A_row[i] = euclideanNormRows(inputMatrix1, i, l);
                 B_col[i] = euclideanNormCols(inputMatrix2, i, n);
-                sum += (A_row[i] + B_col[i]);
+                sum += (A_row[i] * B_col[i]);
             }
             for(int i = 0; i < m; i++){
-                A_row[i] = (A_row[i] + B_col[i]) / sum;
+                A_row[i] = (A_row[i] * B_col[i]) / sum;
             }
             
-            // TODO: custom index sampling from A_row probabilities
-            std::default_random_engine generator;
-            std::uniform_int_distribution<> distribution(0, red_m - 1);
+            std::random_device rd;
+            std::mt19937 eng(rd());
+            std::discrete_distribution<> distr(A_row[0], A_row[m]);
             
             for(int i = 0; i < red_m; i++){
-                value[i] = distribution(generator);
+                value[i] = distr(eng);
                 for(int j = 0; j < n; j++){
-                    outputMatrix2[value[i]][j] = inputMatrix2[value[i]][j];
+                    outputMatrix2[value[i]][j] = inputMatrix2[value[i]][j] / (A_row[value[i]] * red_m);
                 }
             }
             for(int i = 0; i < l; i++){
@@ -324,7 +328,7 @@ int main(){
     
     if(consoleMode){
         
-        int l, m, n, red_m;
+        int l, m, n, red_m, subsampling;
         float subsample;
         std::cout << "Rowcount of matrix A: ";
         std::cin >> l;
@@ -336,6 +340,8 @@ int main(){
         std::cin >> subsample;
         red_m = ceil(m*subsample);
         std::cout << "Using " << red_m << " rows/cols in the probabilistic product instead of " << m << "." << std::endl;
+        std::cout << "Use uniform sampling (1) or custom sampling (2): ";
+        std::cin >> subsampling;
         std::cout << "------------------------------" << std::endl;
         
         
@@ -429,7 +435,7 @@ int main(){
         
         // APPROXIMATE OUTER MATRIX PRODUCT - UNIFORM SAMPLING
         clock_t begin_outer_approx = clock();
-        matrixOperations::subsampleMatrix(A, B, A_red, B_red, l, m, n, red_m, SAMPLING_STRATEGY);
+        matrixOperations::subsampleMatrix(A, B, A_red, B_red, l, m, n, red_m, subsampling);
         matrixOperations::outerMatrixProduct(A_red, B_red, C_approx_outer, l, red_m, n);
         clock_t end_outer_approx = clock();
         elapsed_secs_outer_approx = (double(end_outer_approx - begin_outer_approx) / CLOCKS_PER_SEC) * 1000.0;
@@ -475,7 +481,7 @@ int main(){
     
     else{
     
-        int a, b, c, l, m, n, red_m;
+        int a, b, c, l, m, n, red_m, subsampling;
         float subsample;
         std::cout << "We consider squared matrices." << std::endl;
         std::cout << "Set start dimension: ";
@@ -487,11 +493,13 @@ int main(){
         std::cout << "Factor of subsampling: ";
         std::cin >> subsample;
         std::cout << std::endl;
+        std::cout << "Use uniform sampling (1) or custom sampling (2): ";
+        std::cin >> subsampling;
         std::cout << "------------------------------" << std::endl;
         
         std::ofstream result;
         result.open ("result.txt");
-        result << "matrixDimension,timeInnerExact,errorInnerExact,timeOuterExact,errorOuterExact,timeOuterApprox,errorOuterApprox,subsample\n";
+        result << "matrixDimension,timeInnerExact,errorInnerExact,timeOuterExact,errorOuterExact,timeOuterApprox,errorOuterApprox,subsample,subsampling\n";
         
         for(int k = a; k <= b; k += c){
             
@@ -552,7 +560,7 @@ int main(){
             
             // outer product approx - uniform sampling
             clock_t begin_outer_approx = clock();
-            matrixOperations::subsampleMatrix(A, B, A_red, B_red, l, m, n, red_m, SAMPLING_STRATEGY);
+            matrixOperations::subsampleMatrix(A, B, A_red, B_red, l, m, n, red_m, subsampling);
             matrixOperations::outerMatrixProduct(A_red, B_red, C_approx_outer, l, red_m, n);
             clock_t end_outer_approx = clock();
             elapsed_secs_outer_approx = (double(end_outer_approx - begin_outer_approx) / CLOCKS_PER_SEC) * 1000.0;
@@ -585,7 +593,7 @@ int main(){
             delete[] C_approx_outer;*/
             
             // write results to file
-            result << std::fixed << l << "," << elapsed_secs_inner_exact << "," << error_inner_exact << "," << elapsed_secs_outer_exact << "," << error_outer_exact << "," << elapsed_secs_outer_approx << "," << double(error_outer_approx) << "," << subsample << "\n";
+            result << std::fixed << l << "," << elapsed_secs_inner_exact << "," << error_inner_exact << "," << elapsed_secs_outer_exact << "," << error_outer_exact << "," << elapsed_secs_outer_approx << "," << double(error_outer_approx) << "," << subsample << "," << subsampling << "\n";
             
         }
         

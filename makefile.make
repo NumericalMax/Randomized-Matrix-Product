@@ -1,1 +1,1 @@
-g++ randMatrix.cpp -o randMatrix
+g++ -std=c++11 randMatrix.cpp -o randMatrix
