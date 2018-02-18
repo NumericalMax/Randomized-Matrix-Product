@@ -4,6 +4,10 @@ It is well known, that the classical approach (3 for-loop solution) for the matr
 
 https://arxiv.org/pdf/1608.04481v1.pdf
 
+The original work can be found in:
+
+https://www.stat.berkeley.edu/~mmahoney/pubs/matrix1_SICOMP.pdf
+
 The chart below draws the outcome of the programm. As expected we have a lower runtime by considering the randomized matrix multiplication. The accompanied error for the probabilistic approach is represented by the average error on each cell, that is the total error measured by the Frobenius norm divided by the number of total entries. For instance: Let's assume an average error of 0.1 measured for a matrix dimension of 25x25. The overall error is then reverse computed by 0.1*25*25 = 62.5.
 
 ![alt text](https://github.com/NumericalMax/RandomizedMatrixProduct/blob/master/images/all_avg_Uniform.png)
