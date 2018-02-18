@@ -463,8 +463,8 @@ int main(){
         }
         std::cout << "Computed the approximate outer matrix product in " << elapsed_secs_outer_approx << " milliseconds" << std::endl;
         matrixOperations::differenceMatrix(C_exact_inner, C_approx_outer, C_approx_outer, l, n);
-        float error_approx = matrixOperations::frobeniusNorm(C_approx_outer, l, n);
-        std::cout << "Error of the approximate outer product: " << error_approx << "." << std::endl;
+        error_outer_approx = matrixOperations::frobeniusNorm(C_approx_outer, l, n);
+        std::cout << "Error of the approximate outer product: " << error_outer_approx << "." << std::endl;
         std::cout << "------------------------------" << std::endl;
         
         // CLEAN DYNAMIC MEMORY
@@ -587,7 +587,7 @@ int main(){
             // clean dynamic memory
             // free sub-arrays
             // TODO: Manage to free memory within loop! IMPORTANT!
-            for(int i1 = 0; i1 < l; i1++){
+            /*for(int i1 = 0; i1 < l; i1++){
                 delete[] A[i1];
                 delete[] A_red[i1];
                 delete[] C_exact_inner[i1];
@@ -615,8 +615,8 @@ int main(){
             B_red = nullptr;
             C_exact_inner = nullptr;
             C_exact_outer = nullptr;
-            C_approx_outer = nullptr;
-
+            C_approx_outer = nullptr;*/
+            
         }
         
         // close file
