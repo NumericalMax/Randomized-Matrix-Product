@@ -495,7 +495,8 @@ int main(){
     else{
     
         int a, b, c, l, m, n, red_m, subsampling;
-        float subsample, error_inner_exact;
+        float subsample;
+        
         std::cout << "We consider squared matrices." << std::endl;
         std::cout << "Set start dimension: ";
         std::cin >> a;
@@ -561,7 +562,6 @@ int main(){
             matrixOperations::innerMatrixProduct(A, B, C_exact_inner, l, m, n);
             clock_t end_inner_exact = clock();
             elapsed_secs_inner_exact = (double(end_inner_exact - begin_inner_exact) / CLOCKS_PER_SEC) * 1000.0;
-            error_inner_exact = 0.0;
             
             // outer product exact
             clock_t begin_outer_exact = clock();
@@ -582,7 +582,7 @@ int main(){
             
             
             // write results to file
-            result << std::fixed << l << "," << elapsed_secs_inner_exact << "," << error_inner_exact << "," << elapsed_secs_outer_exact << "," << error_outer_exact << "," << elapsed_secs_outer_approx << "," << double(error_outer_approx) << "," << subsample << "," << subsampling << "\n";
+            result << std::fixed << l << "," << elapsed_secs_inner_exact << "," << 0.0 << "," << elapsed_secs_outer_exact << "," << error_outer_exact << "," << elapsed_secs_outer_approx << "," << double(error_outer_approx) << "," << subsample << "," << subsampling << "\n";
             
             // clean dynamic memory
             // free sub-arrays
