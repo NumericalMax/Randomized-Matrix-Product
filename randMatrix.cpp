@@ -303,6 +303,19 @@ namespace matrixOperations{
          Output:        - Matrix with random numbers (range: [0,1]) as entry
          */
         
+        // gaussian
+        /*std::random_device rd{};
+        std::mt19937 gen{rd()};
+        std::normal_distribution<> d{10,1};
+        std::map<int, int> hist{};
+        
+        for(int i = 0; i < size_l; i++){
+            for (int j = 0; j < size_m; j++){
+                matrix[i][j] = double(std::round(d(gen)));
+            }
+        }*/
+        
+        // uniform in [0,1]
         for(int i = 0; i < size_l; i++){
             for (int j = 0; j < size_m; j++){
                 matrix[i][j] = double(rand()) / (RAND_MAX);
@@ -321,7 +334,7 @@ int main(){
     
     // key values
     double elapsed_secs_inner_exact, elapsed_secs_outer_exact, elapsed_secs_outer_approx;
-    float error_inner_exact, error_outer_exact, error_outer_approx;
+    float error_outer_exact, error_outer_approx;
     
     // set seed
     srand(time(NULL));
@@ -482,7 +495,7 @@ int main(){
     else{
     
         int a, b, c, l, m, n, red_m, subsampling;
-        float subsample;
+        float subsample, error_inner_exact;
         std::cout << "We consider squared matrices." << std::endl;
         std::cout << "Set start dimension: ";
         std::cin >> a;
@@ -567,10 +580,14 @@ int main(){
             matrixOperations::differenceMatrix(C_exact_inner, C_approx_outer, C_approx_outer, l, n);
             error_outer_approx = matrixOperations::frobeniusNorm(C_approx_outer, l, n);
             
+            
+            // write results to file
+            result << std::fixed << l << "," << elapsed_secs_inner_exact << "," << error_inner_exact << "," << elapsed_secs_outer_exact << "," << error_outer_exact << "," << elapsed_secs_outer_approx << "," << double(error_outer_approx) << "," << subsample << "," << subsampling << "\n";
+            
             // clean dynamic memory
             // free sub-arrays
             // TODO: Manage to free memory within loop! IMPORTANT!
-            /*for(int i1 = 0; i1 < l; i1++){
+            for(int i1 = 0; i1 < l; i1++){
                 delete[] A[i1];
                 delete[] A_red[i1];
                 delete[] C_exact_inner[i1];
@@ -590,11 +607,16 @@ int main(){
             delete[] B_red;
             delete[] C_exact_inner;
             delete[] C_exact_outer;
-            delete[] C_approx_outer;*/
+            delete[] C_approx_outer;
             
-            // write results to file
-            result << std::fixed << l << "," << elapsed_secs_inner_exact << "," << error_inner_exact << "," << elapsed_secs_outer_exact << "," << error_outer_exact << "," << elapsed_secs_outer_approx << "," << double(error_outer_approx) << "," << subsample << "," << subsampling << "\n";
-            
+            A = nullptr;
+            B = nullptr;
+            A_red = nullptr;
+            B_red = nullptr;
+            C_exact_inner = nullptr;
+            C_exact_outer = nullptr;
+            C_approx_outer = nullptr;
+
         }
         
         // close file
